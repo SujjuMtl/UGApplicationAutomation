@@ -1,0 +1,55 @@
+<project name="Automation for UG Application" default="all" basedir=".">
+	
+	<!-- ========== Initialize Properties =================================== -->
+	<!-- set global properties for build -->
+	
+	<property name="basedir" value="." />
+	<property name="lib" value="${basedir}/lib" />
+	<property name="src" value="${basedir}/src" />
+	<property name="bin" value="${basedir}/bin" />
+	<property name="report-dir" value="${basedir}/TestOutput" />
+	<property name="testng-report-dir" value="${report-dir}/TestNGreport" />
+	
+		<!-- ====== Set the classpath ====  -->
+		<path id="classpath">
+			<pathelement location="${bin}" />
+			<fileset dir="${lib}">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+		
+		<target name="all" depends="clean,create,compile,execution">
+			<echo> "Build Execution Started" </echo>
+		</target>
+		<!-- Delete directories  -->
+		<target name="clean">
+			<echo> "Cleaning Build directories" </echo>
+			<delete dir="${bin}"/>
+			<delete dir="${report-dir}"/>
+		</target>
+		
+		<!-- Creating directories -->
+		<target name="create" depends="clean">
+			<echo> "Creating Build Directories" </echo>
+			<mkdir dir="${bin}"/>
+			<mkdir dir="${report-dir}"/>
+		</target>
+	
+		<!-- Compile the java code from ${src} into ${bin} -->
+		<target name="compile" depends="create">
+			<echo> "Compiling Test Cases" </echo>
+			<javac srcdir="${src}" classpathref="classpath" includeAntRuntime="No" destdir="${bin}" />
+			<echo> /* Compiled Directory Classes */ </echo>
+		</target>
+		
+		<!-- Runs the file and generates Reportng report for TestNG-->
+		<taskdef name="testng" classname="org.testng.TestNGAntTask" classpathref="classpath" />
+		
+		<target name="execution" depends="compile">
+			<echo> "Executing Test Cases" </echo>
+			<mkdir dir="${testng-report-dir}" />
+			<testng outputdir="${testng-report-dir}" classpathref="classpath" useDefaultListeners="true">
+				<xmlfileset dir="${basedir}" includes="testng.xml" />
+			</testng>
+		</target>
+</project>
